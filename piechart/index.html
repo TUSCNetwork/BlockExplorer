@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>pie chart test</title>
+	<style type="text/css">
+	body {
+		padding: 50px;
+		background-color: #2b2a27;
+	}
+
+	#app {
+		background-color: #ddd;
+		border: 2px solid darkred;
+		padding: 40px;
+		margin: 10px;
+	}
+</style>
+</head>
+<body>
+
+	<template id="tusc-pie-chart">
+		<svg ref="svg">
+			<g ref="g"></g>
+		</svg>
+	</template>
+
+	<div id="app">
+		<tusc-pie-chart :data-set="parsedInput"></tusc-pie-chart>
+		<br>
+		<br>
+		<p>
+			Enter numbers separated by spaces to see the chart update.
+			<br>
+			Optionally put corresponding labels separated by spaces on another line.
+		</p>
+		<textarea v-model="convenienceInput"></textarea>
+	</div>
+
+	<!-- Scripts -->
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<!-- TODO replace vue with production: -->
+	<script src="https://d3js.org/d3.v5.min.js"></script>
+	<script src="script.js"></script>
+
+</body>
+</html>
