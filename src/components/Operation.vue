@@ -3,6 +3,7 @@
     <p>Operation info</p>
     <p>Operation code: {{ operation_code }} ({{ operation_codes[operation_code] }})</p>
     <hr>
+    
     <!-- OPCODE 0 -->
     <div v-if="operation_code === 0">
       <p>Amount:<asset-amount :amount="operation.amount" /></p>
@@ -10,11 +11,11 @@
       <br>
       <p>
         To:
-        <router-link to="TODO">{{ operation.to }}</router-link>
+        <router-link :to="'/account/'+operation.to">{{ operation.to }}</router-link>
       </p>
       <p>
         From:
-        <router-link to="TODO">{{ operation.from }}</router-link>
+        <router-link :to="'/account/'+operation.from">{{ operation.from }}</router-link>
       </p>
       <div v-if="operation.memo">
         <br>
@@ -112,6 +113,17 @@
 
     <!-- OPCODE 14 -->
     <div v-else-if="operation_code === 14">
+        <p>Asset to issue: <asset-amount :amount="operation.asset_to_issue" /></p>
+        <p>
+          Issuer:
+          <router-link :to="'/account/'+operation.issuer">{{ operation.issuer }}</router-link>
+        </p>
+        <p>
+            Issue to account:
+            <router-link :to="'/account/'+operation.issue_to_account">{{ operation.issue_to_account }}</router-link>
+        </p>
+        <br>
+        <p>Fee: <asset-amount :amount="operation.fee" /></p>
     </div>
 
     <!-- OPCODE 15 -->

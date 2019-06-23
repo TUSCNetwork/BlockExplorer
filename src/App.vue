@@ -12,11 +12,16 @@
         <input type="text" id="searchAddress" v-model="searchAddress">
       </p>
     </div>
+    <div class="section border">
+      <witnesses/>
+    </div>
     <router-view :key="$route.fullPath" class="section border"/>
   </div>
 </template>
 
 <script>
+  import Witnesses from './components/Witnesses.vue'
+
   export default {
     name: 'App',
     data() {
@@ -26,6 +31,9 @@
         socketReady: false,
         queryQueue: []
       }
+    },
+    components: {
+      Witnesses
     },
     watch: {
       searchAddress: debounce(function(val) {
@@ -48,7 +56,7 @@
           })
         }
 
-        log(`sending params`, params)
+        log(`sending params`, api, method, params)
 
         const apiName = apis[api] || 'unknown_api'
         return this.$chainWebsocket.instance()[apiName]().exec(method, params)
@@ -57,7 +65,8 @@
   },
   created() {
     this.$chainWebsocket
-      .instance("wss://bitshares.openledger.info/ws", true)
+      // .instance("wss://bitshares.openledger.info/ws", true)
+      .instance("ws://ec2-18-191-226-51.us-east-2.compute.amazonaws.com:8090", true)
       .init_promise
       .then((res) => {
 
@@ -68,16 +77,17 @@
           const messageID = messageData.id
           log(`received response`, messageData.result)
           originalOnMessage(message)
-          this.$chainWebsocket.instance().ws_rpc.ws.onmessage
         }
         /* END DEBUG */
 
+        // handle all requests that were entered before the socket was ready
         this.socketReady = true
         while(this.queryQueue.length > 0) {
           const [api, method, params, res, rej] = this.queryQueue.pop()
           this.send(api, method, params).then(res).catch(rej)
           log('queued query got sent', method, params)
         }
+
         // chainWebsocket.instance().db_api().exec("set_subscribe_callback", [updateListener, true])
       })
 
@@ -183,10 +193,14 @@ hr {
   padding-left: 15px;
   margin-left: 10px;
 }
+.long-key {
+  word-break: break-word;
+  vertical-align: top;
+}
 
 /* * */
 #log {
-  background-color: #EEE;
+  background-color: rgb(45, 47, 48);
   font-family: "Courier New", serif;
 
   max-height: 50%;
@@ -200,5 +214,22 @@ hr {
 }
 .log-indented {
   padding-left: 40px;
+}
+
+/* * * provisional dark style */
+body {
+  background-color: rgb(34, 36, 37);
+  color: rgb(209, 203, 199);
+}
+
+* {
+  border-color: rgb(123, 107, 101) !important;
+}
+
+a {
+  color: rgb(144, 196, 238);
+}
+a:visited {
+  color: rgb(160, 117, 234);
 }
 </style>

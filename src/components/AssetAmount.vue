@@ -1,6 +1,6 @@
 <template>
   <span>
-    {{ amount.amount }} units of asset <router-link to="TODO">{{ amount.asset_id }}</router-link>
+    {{ amount.amount }} units of asset {{ amount.asset_id }}</router-link>
   </span>
 </template>
 

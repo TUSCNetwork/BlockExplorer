@@ -1,6 +1,6 @@
 <template>
   <div class="account">
-    <p>Account {{ name }}</p>
+    <p>Account {{ displayName }}</p>
     <hr>
 
     <div v-if="error">
@@ -39,7 +39,6 @@
       <hr>
       <div class="transactions-container">
         <div v-for="operation in accountHistory" v-bind:key="operation.id" class="transaction">
-          <!-- <a :href="'/tx/'+operation.id.split('.')[2]"> -->
           Transaction <router-link :to="'/tx/'+operation.id">{{ operation.id }}</router-link>
         </div>
       </div>
@@ -57,6 +56,7 @@ export default {
     return {
       loading: false,
       error: null,
+      displayName: this.name,
       accountInfo: null,
       accountHistory: null,
     }
@@ -74,8 +74,32 @@ export default {
     fetch() {
       this.error = this.accountInfo = null
       this.loading = true
+
+      if (/1.2.\d+/.exec(this.name) !== null) {  // we were given id
+        this.$parent.send('database', 'get_objects', [[this.name]])
+        .then(result => {
+          this.loading = false
+          this.accountInfo = result[0]
+          this.displayName = this.accountInfo.name
+        }).catch(err => {
+          this.loading = false
+          this.error = err
+        })
+
+        this.$parent.send('history', 'get_relative_account_history', [this.name, 0, 100, 0])
+        .then(result => {
+          this.accountHistory = result
+        })
+        .catch(err => {
+          this.loading = false
+          this.error = err
+        })
+
+        return
+      }
       
-      this.$parent.send('database', 'get_account_by_name', [this.$route.params.name])
+      // we were given name
+      this.$parent.send('database', 'get_account_by_name', [this.name])
       .then(result => {
         this.loading = false
         this.accountInfo = result
