@@ -12,9 +12,9 @@
         <input type="text" id="searchAddress" v-model="searchAddress">
       </p>
     </div>
-    <div class="section border">
-      <witnesses/>
-    </div>
+    <keep-alive>
+      <witnesses class="section border"/>
+    </keep-alive>
     <router-view :key="$route.fullPath" class="section border"/>
   </div>
 </template>

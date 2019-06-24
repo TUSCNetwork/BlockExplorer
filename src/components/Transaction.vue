@@ -46,18 +46,17 @@ export default {
     '$route': 'fetch'
   },
   methods: {
-    fetch() {
+    async fetch() {
       this.error = this.transactionInfo = null
       this.loading = true
-      
-      this.$parent.send('database', 'get_objects', [[this.id]])
-      .then(result => {
-        this.loading = false
-        this.transactionInfo = result[0]
-      }).catch(err => {
-        this.loading = false
+
+      try {
+        this.transactionInfo = ( await this.$parent.send('database', 'get_objects', [[this.id]]) )[0]
+      } catch(e) {
         this.error = err
-      })
+      } finally {
+        this.loading = false
+      }
     }
   }
 }

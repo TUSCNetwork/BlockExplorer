@@ -71,51 +71,42 @@ export default {
     '$route': 'fetch'
   },
   methods: {
-    fetch() {
+    async fetch() {
       this.error = this.accountInfo = null
       this.loading = true
 
-      if (/1.2.\d+/.exec(this.name) !== null) {  // we were given id
-        this.$parent.send('database', 'get_objects', [[this.name]])
-        .then(result => {
-          this.loading = false
-          this.accountInfo = result[0]
-          this.displayName = this.accountInfo.name
-        }).catch(err => {
-          this.loading = false
-          this.error = err
-        })
-
-        this.$parent.send('history', 'get_relative_account_history', [this.name, 0, 100, 0])
-        .then(result => {
-          this.accountHistory = result
-        })
-        .catch(err => {
-          this.loading = false
-          this.error = err
-        })
-
-        return
+      let nameIsID = (/1.2.\d+/.exec(this.name) !== null)
+      try {
+        let result = nameIsID ?
+          ( await this.$parent.send('database', 'get_objects', [[this.name]]) )[0] :  // we were given id
+          ( await this.$parent.send('database', 'get_account_by_name', [this.name]) )  // we were given name
+        
+        if (nameIsID)
+          this.displayName = result.name
+        
+        if (result !== null){
+          this.accountInfo = result
+          this.fetchAccountHistory()
+        }
+        else {
+          this.error = `Account ${this.name} not found`
+        }
+      } catch(e) {
+        this.error = e
+      } finally {
+        this.loading = false
       }
-      
-      // we were given name
-      this.$parent.send('database', 'get_account_by_name', [this.name])
-      .then(result => {
+    },
+    async fetchAccountHistory() {
+      // accepts either id or name
+      try {
+        this.accountHistory =
+          await this.$parent.send('history', 'get_relative_account_history', [this.name, 0, 100, 0])
+      } catch(e) {
+        this.error = e
+      } finally {
         this.loading = false
-        this.accountInfo = result
-      }).catch(err => {
-        this.loading = false
-        this.error = err
-      })
-
-      this.$parent.send('history', 'get_relative_account_history', [this.name, 0, 100, 0])
-      .then(result => {
-        this.accountHistory = result
-      })
-      .catch(err => {
-        this.loading = false
-        this.error = err
-      })
+      }
     }
   }
 }

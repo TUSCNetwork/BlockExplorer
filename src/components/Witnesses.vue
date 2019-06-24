@@ -66,9 +66,6 @@ export default {
   created() {
     this.fetch()
   },
-  watch: {
-    '$route': 'fetch'
-  },
   methods: {
     async fetch() {
       this.error = this.witnesses = null
@@ -77,8 +74,8 @@ export default {
       try {
         let witnessIDs = ( await this.$parent.send('database', 'get_objects', [['2.12.0']]) )
           [0].current_shuffled_witnesses
-        this.witnesses = (await Promise.all(
-          witnessIDs.map(ID => this.$parent.send('database', 'get_objects', [[ID]]))))
+        this.witnesses = ( await Promise.all(witnessIDs.map(
+          ID => this.$parent.send('database', 'get_objects', [[ID]]))) )
           .map(witness => witness[0])
       } catch(e) {
         this.error = e
@@ -95,7 +92,7 @@ export default {
   margin-bottom: 20px;
 }
 .witnesses {
-  height: 500px;
+  height: 300px;
   overflow: auto;
 }
 .long-key {
