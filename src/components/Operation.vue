@@ -4,7 +4,7 @@
     <p>Operation code: {{ operation_code }} ({{ operation_codes[operation_code] }})</p>
     <hr>
     
-    <!-- OPCODE 0 -->
+    <!-- OPCODE 0 transfer -->
     <div v-if="operation_code === 0">
       <p>Amount:<asset-amount :amount="operation.amount" /></p>
       <p>Fee: <asset-amount :amount="operation.fee" /></p>
@@ -26,251 +26,135 @@
       </div>
     </div>
 
-    <!-- OPCODE 1 -->
-    <div v-else-if="operation_code === 1">
-      <p>Seller: {{ operation.seller }}</p>
-      <p>Expiration: {{ operation.expiration }}</p>
-      <br>
-      <p>Amount to sell: <asset-amount :amount="operation.amount_to_sell" /></p>
-      <p>Minimum to receive: <asset-amount :amount="operation.min_to_receive" /></p>
-      <br>
-      <p>Fee: <asset-amount :amount="operation.fee" /></p>
-      <br>
-      <p>Fill or kill: {{ operation.fill_or_kill }}</p>
-    </div>
-
-    <!-- OPCODE 2 -->
-    <div v-else-if="operation_code === 2">
-      <p>Fee: <asset-amount :amount="operation.fee" /></p>
-      <p>Fee paying account: {{ operation.fee_paying_account }}</p>
-      <p>Order: {{ operation.order }}</p>
-    </div>
-
-    <!-- OPCODE 3 -->
-    <div v-else-if="operation_code === 3">
-    </div>
-
-    <!-- OPCODE 4 -->
-    <div v-else-if="operation_code === 4">
-      <p>Order ID: {{ operation.order_id }}</p>
-      <p>Pays: <asset-amount :amount="operation.pays" /></p>
-      <p>Receives: <asset-amount :amount="operation.receives" /></p>
-      <br>
-      <p>
-        Fill price:
-        <div class="indent">
-          <p>
-            Base:
-            <asset-amount :amount="operation.fill_price.base" />
-          </p>
-          <p>
-            Quote:
-            <asset-amount :amount="operation.fill_price.quote" />
-          </p>
-        </div>
-      </p>
-      <br>
-      <p>Fee: <asset-amount :amount="operation.fee" /></p>
-      <br>
-      <p>User made this order? {{ operation.is_maker }}</p>
-    </div>
-
-    <!-- OPCODE 5 -->
+    <!-- OPCODE 5 account_create -->
     <div v-else-if="operation_code === 5">
     </div>
 
-    <!-- OPCODE 6 -->
+    <!-- OPCODE 6 account_update -->
     <div v-else-if="operation_code === 6">
     </div>
 
-    <!-- OPCODE 7 -->
+    <!-- OPCODE 7 account_whitelist -->
     <div v-else-if="operation_code === 7">
     </div>
 
-    <!-- OPCODE 8 -->
+    <!-- OPCODE 8 account_upgrade -->
     <div v-else-if="operation_code === 8">
     </div>
 
-    <!-- OPCODE 9 -->
+    <!-- OPCODE 9 account_transfer -->
     <div v-else-if="operation_code === 9">
     </div>
 
-    <!-- OPCODE 10 -->
-    <div v-else-if="operation_code === 10">
-    </div>
-
-    <!-- OPCODE 11 -->
-    <div v-else-if="operation_code === 11">
-    </div>
-
-    <!-- OPCODE 12 -->
-    <div v-else-if="operation_code === 12">
-    </div>
-
-    <!-- OPCODE 13 -->
-    <div v-else-if="operation_code === 13">
-    </div>
-
-    <!-- OPCODE 14 -->
-    <div v-else-if="operation_code === 14">
-        <p>Asset to issue: <asset-amount :amount="operation.asset_to_issue" /></p>
-        <p>
-          Issuer:
-          <router-link :to="'/account/'+operation.issuer">{{ operation.issuer }}</router-link>
-        </p>
-        <p>
-            Issue to account:
-            <router-link :to="'/account/'+operation.issue_to_account">{{ operation.issue_to_account }}</router-link>
-        </p>
-        <br>
-        <p>Fee: <asset-amount :amount="operation.fee" /></p>
-    </div>
-
-    <!-- OPCODE 15 -->
+    <!-- OPCODE 15 asset_reserve -->
     <div v-else-if="operation_code === 15">
     </div>
 
-    <!-- OPCODE 16 -->
-    <div v-else-if="operation_code === 16">
-    </div>
-
-    <!-- OPCODE 17 -->
-    <div v-else-if="operation_code === 17">
-    </div>
-
-    <!-- OPCODE 18 -->
-    <div v-else-if="operation_code === 18">
-    </div>
-
-    <!-- OPCODE 19 -->
-    <div v-else-if="operation_code === 19">
-    </div>
-
-    <!-- OPCODE 20 -->
+    <!-- OPCODE 20 witness_create -->
     <div v-else-if="operation_code === 20">
     </div>
 
-    <!-- OPCODE 21 -->
+    <!-- OPCODE 21 witness_update -->
     <div v-else-if="operation_code === 21">
     </div>
 
-    <!-- OPCODE 22 -->
+    <!-- OPCODE 22 proposal_create -->
     <div v-else-if="operation_code === 22">
     </div>
 
-    <!-- OPCODE 23 -->
+    <!-- OPCODE 23 proposal_update -->
     <div v-else-if="operation_code === 23">
     </div>
 
-    <!-- OPCODE 24 -->
+    <!-- OPCODE 24 proposal_delete -->
     <div v-else-if="operation_code === 24">
     </div>
 
-    <!-- OPCODE 25 -->
+    <!-- OPCODE 25 withdraw_permission_create -->
     <div v-else-if="operation_code === 25">
     </div>
 
-    <!-- OPCODE 26 -->
+    <!-- OPCODE 26 withdraw_permission_create -->
     <div v-else-if="operation_code === 26">
     </div>
 
-    <!-- OPCODE 27 -->
+    <!-- OPCODE 27 withdraw_permission_claim -->
     <div v-else-if="operation_code === 27">
     </div>
 
-    <!-- OPCODE 28 -->
+    <!-- OPCODE 28 withdraw_permission_delete -->
     <div v-else-if="operation_code === 28">
     </div>
 
-    <!-- OPCODE 29 -->
+    <!-- OPCODE 29 committee_member_create -->
     <div v-else-if="operation_code === 29">
     </div>
 
-    <!-- OPCODE 30 -->
+    <!-- OPCODE 30 committee_member_update -->
     <div v-else-if="operation_code === 30">
     </div>
 
-    <!-- OPCODE 31 -->
+    <!-- OPCODE 31 committee_member_update_global_parameters -->
     <div v-else-if="operation_code === 31">
     </div>
 
-    <!-- OPCODE 32 -->
+    <!-- OPCODE 32 vesting_balance_create -->
     <div v-else-if="operation_code === 32">
     </div>
 
-    <!-- OPCODE 33 -->
+    <!-- OPCODE 33 vesting_balance_withdraw -->
     <div v-else-if="operation_code === 33">
     </div>
 
-    <!-- OPCODE 34 -->
+    <!-- OPCODE 34 worker_create -->
     <div v-else-if="operation_code === 34">
     </div>
 
-    <!-- OPCODE 35 -->
+    <!-- OPCODE 35 custom -->
     <div v-else-if="operation_code === 35">
     </div>
 
-    <!-- OPCODE 36 -->
+    <!-- OPCODE 36 assert -->
     <div v-else-if="operation_code === 36">
     </div>
 
-    <!-- OPCODE 37 -->
+    <!-- OPCODE 37 balance_claim -->
     <div v-else-if="operation_code === 37">
     </div>
 
-    <!-- OPCODE 38 -->
+    <!-- OPCODE 38 override_transfer -->
     <div v-else-if="operation_code === 38">
     </div>
 
-    <!-- OPCODE 39 -->
+    <!-- OPCODE 39 transfer_to_blind -->
     <div v-else-if="operation_code === 39">
     </div>
 
-    <!-- OPCODE 40 -->
+    <!-- OPCODE 40 blind_transfer -->
     <div v-else-if="operation_code === 40">
     </div>
 
-    <!-- OPCODE 41 -->
+    <!-- OPCODE 41 transfer_from_blind -->
     <div v-else-if="operation_code === 41">
     </div>
 
-    <!-- OPCODE 42 -->
-    <div v-else-if="operation_code === 42">
-    </div>
-
-    <!-- OPCODE 43 -->
+    <!-- OPCODE 43 asset_claim_fees -->
     <div v-else-if="operation_code === 43">
     </div>
 
-    <!-- OPCODE 44 -->
-    <div v-else-if="operation_code === 44">
-    </div>
-
-    <!-- OPCODE 45 -->
-    <div v-else-if="operation_code === 45">
-    </div>
-
-    <!-- OPCODE 46 -->
-    <div v-else-if="operation_code === 46">
-    </div>
-
-    <!-- OPCODE 47 -->
+    <!-- OPCODE 47 asset_claim_pool -->
     <div v-else-if="operation_code === 47">
     </div>
 
-    <!-- OPCODE 48 -->
-    <div v-else-if="operation_code === 48">
-    </div>
-
-    <!-- OPCODE 49 -->
+    <!-- OPCODE 49 custom_authority_create -->
     <div v-else-if="operation_code === 49">
     </div>
 
-    <!-- OPCODE 50 -->
+    <!-- OPCODE 50 custom_authority_update -->
     <div v-else-if="operation_code === 50">
     </div>
 
-    <!-- OPCODE 51 -->
+    <!-- OPCODE 51 custom_authority_delete -->
     <div v-else-if="operation_code === 51">
     </div>
   </div>
@@ -281,33 +165,33 @@ import AssetAmount from './AssetAmount.vue'
 
 export default {
   name: 'Operation',
-  props: ['operation_code', 'operation'],
+  props: ['operationCode', 'operation'],
   components: {
     AssetAmount
   },
   data() {
     return {
-      operation_codes: {
+      operationCodes: {
         0: 'transfer',
-        1: 'limit_order_create',
-        2: 'limit_order_cancel',
-        3: 'call_order_update',
-        4: 'fill_order',
+        // 1: 'limit_order_create',
+        // 2: 'limit_order_cancel',
+        // 3: 'call_order_update',
+        // 4: 'fill_order',
         5: 'account_create',
         6: 'account_update',
         7: 'account_whitelist',
         8: 'account_upgrade',
         9: 'account_transfer',
-        10: 'asset_create',
-        11: 'asset_update',
-        12: 'asset_update_bitasset',
-        13: 'asset_update_feed_producers',
-        14: 'asset_issue',
+        // 10: 'asset_create',
+        // 11: 'asset_update',
+        // 12: 'asset_update_bitasset',
+        // 13: 'asset_update_feed_producers',
+        // 14: 'asset_issue',
         15: 'asset_reserve',
-        16: 'asset_fund_fee_pool',
-        17: 'asset_settle',
-        18: 'asset_global_settle',
-        19: 'asset_publish_feed',
+        // 16: 'asset_fund_fee_pool',
+        // 17: 'asset_settle',
+        // 18: 'asset_global_settle',
+        // 19: 'asset_publish_feed',
         20: 'witness_create',
         21: 'witness_update',
         22: 'proposal_create',
@@ -330,13 +214,13 @@ export default {
         39: 'transfer_to_blind',
         40: 'blind_transfer',
         41: 'transfer_from_blind',
-        42: 'asset_settle_cancel',
+        // 42: 'asset_settle_cancel',
         43: 'asset_claim_fees',
-        44: 'fba_distribute',
-        45: 'bid_collateral',
-        46: 'execute_bid',
+        // 44: 'fba_distribute',
+        // 45: 'bid_collateral',
+        // 46: 'execute_bid',
         47: 'asset_claim_pool',
-        48: 'asset_update_issuer',
+        // 48: 'asset_update_issuer',
         49: 'custom_authority_create',
         50: 'custom_authority_update',
         51: 'custom_authority_delete'
@@ -347,5 +231,4 @@ export default {
 </script>
 
 <style scoped>
-  
 </style>

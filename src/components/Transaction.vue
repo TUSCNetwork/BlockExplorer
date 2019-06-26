@@ -16,7 +16,7 @@
       <p>Transaction number in block: {{ transactionInfo.trx_in_block }}</p>
       <p>Operation in transaction: {{ transactionInfo.op_in_trx }}</p>
       <p>Virtual operation: {{ transactionInfo.virtual_op }}</p>
-      <operation :operation_code="transactionInfo.op[0]" :operation="transactionInfo.op[1]" class="border subsection"/>
+      <operation :operationCode="transactionInfo.op[0]" :operation="transactionInfo.op[1]" class="border subsection"/>
     </div>
   </div>
 </template>
@@ -51,9 +51,9 @@ export default {
       this.loading = true
 
       try {
-        this.transactionInfo = ( await this.$parent.send('database', 'get_objects', [[this.id]]) )[0]
+        this.transactionInfo = ( await this.$chainWebsocket.send('database', 'get_objects', [[this.id]]) )[0]
       } catch(e) {
-        this.error = err
+        this.error = e
       } finally {
         this.loading = false
       }

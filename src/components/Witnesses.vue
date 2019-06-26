@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Current witnesses</p>
+    <p>Current active witnesses</p>
     <hr>
 
     <div v-if="loading">
@@ -71,12 +71,12 @@ export default {
       this.error = this.witnesses = null
       this.loading = true
       
-      try {
-        let witnessIDs = ( await this.$parent.send('database', 'get_objects', [['2.12.0']]) )
-          [0].current_shuffled_witnesses
-        this.witnesses = ( await Promise.all(witnessIDs.map(
-          ID => this.$parent.send('database', 'get_objects', [[ID]]))) )
-          .map(witness => witness[0])
+      try {        
+        let witnessIDs = (
+          await this.$chainWebsocket.send('database', 'get_global_properties', [])
+        ).active_witnesses
+        
+        this.witnesses = await this.$chainWebsocket.send('database', 'get_objects', [witnessIDs])
       } catch(e) {
         this.error = e
       } finally {
@@ -89,7 +89,10 @@ export default {
 
 <style scoped>
 .witness {
-  margin-bottom: 20px;
+  margin: 0 15px 20px;
+  display: inline-block;
+  border: 1px solid gray;
+  padding: 5px;
 }
 .witnesses {
   height: 300px;

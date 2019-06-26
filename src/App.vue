@@ -12,9 +12,7 @@
         <input type="text" id="searchAddress" v-model="searchAddress">
       </p>
     </div>
-    <keep-alive>
-      <witnesses class="section border"/>
-    </keep-alive>
+    <witnesses class="section border"/>
     <router-view :key="$route.fullPath" class="section border"/>
   </div>
 </template>
@@ -28,8 +26,6 @@
       return {
         search: '',
         searchAddress: '',
-        socketReady: false,
-        queryQueue: []
       }
     },
     components: {
@@ -39,62 +35,7 @@
       searchAddress: debounce(function(val) {
         this.$router.push({name: 'account', params: {name: val}})
       }, 500)
-    },
-    methods: {
-      send(api, method, params) {
-        const apis = {  // the keys get provided, the values are for bitsharesjs-ws
-          database: 'db_api',
-          history: 'history_api',
-          network: 'network_api',
-          crypto: 'crypto_api',
-          orders: 'orders_api'
-        }
-
-        if (! this.socketReady) {
-          return new Promise((res, rej) => {
-            this.queryQueue.push([api, method, params, res, rej])
-          })
-        }
-
-        log(`sending params`, api, method, params)
-
-        const apiName = apis[api] || 'unknown_api'
-        return this.$chainWebsocket.instance()[apiName]().exec(method, params)
-        // TODO less brittle
     }
-  },
-  created() {
-    this.$chainWebsocket
-      // .instance("wss://bitshares.openledger.info/ws", true)
-      .instance("ws://ec2-18-191-226-51.us-east-2.compute.amazonaws.com:8090", true)
-      .init_promise
-      .then((res) => {
-
-        /* DEBUG */
-        let originalOnMessage = this.$chainWebsocket.instance().ws_rpc.ws.onmessage
-        this.$chainWebsocket.instance().ws_rpc.ws.onmessage = (message) => {
-          const messageData = JSON.parse(message.data)
-          const messageID = messageData.id
-          log(`received response`, messageData.result)
-          originalOnMessage(message)
-        }
-        /* END DEBUG */
-
-        // handle all requests that were entered before the socket was ready
-        this.socketReady = true
-        while(this.queryQueue.length > 0) {
-          const [api, method, params, res, rej] = this.queryQueue.pop()
-          this.send(api, method, params).then(res).catch(rej)
-          log('queued query got sent', method, params)
-        }
-
-        // chainWebsocket.instance().db_api().exec("set_subscribe_callback", [updateListener, true])
-      })
-
-    // function updateListener(object) {
-        // console.log("set_subscribe_callback:\n", object)
-    // }
-  }
 }
 
 // TODO lodash?
@@ -112,41 +53,6 @@ function debounce(func, wait) {
 
 window.onload = () => {
   document.getElementById('searchAddress').focus()
-}
-
-const debug_logging = true
-let logCounter = 1
-window.log = (...args) => {
-  args = args.map(arg => {
-    if(typeof arg === 'string')
-      return arg
-    return JSON.stringify(arg, null, 2)
-  })
-  
-  if (! debug_logging) {
-    args.forEach(arg => console.log(arg))
-    return
-  }
-
-  const logDiv = document.getElementById('log')
-  const scrollLog = () => { logDiv.scrollTop = logDiv.scrollHeight }
-
-  const el = document.createElement('p')
-  el.innerText = `${logCounter}. ${args[0]}`
-  el.classList.add('log-item')
-  logDiv.appendChild(el)
-  logCounter++
-
-  args.slice(1).forEach(arg => {
-    const el = document.createElement('p')
-    el.innerText = arg
-    el.classList.add('log-item', 'log-indented')
-    logDiv.appendChild(el)
-  })
-
-  logDiv.appendChild(document.createElement('hr'))
-
-  // scrollLog()
 }
 </script>
 

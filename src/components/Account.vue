@@ -1,6 +1,6 @@
 <template>
   <div class="account">
-    <p>Account {{ displayName }}</p>
+    <p>Account {{ accountInfo ? accountInfo.name : this.name }}</p>
     <hr>
 
     <div v-if="error">
@@ -56,7 +56,6 @@ export default {
     return {
       loading: false,
       error: null,
-      displayName: this.name,
       accountInfo: null,
       accountHistory: null,
     }
@@ -77,20 +76,14 @@ export default {
 
       let nameIsID = (/1.2.\d+/.exec(this.name) !== null)
       try {
-        let result = nameIsID ?
-          ( await this.$parent.send('database', 'get_objects', [[this.name]]) )[0] :  // we were given id
-          ( await this.$parent.send('database', 'get_account_by_name', [this.name]) )  // we were given name
-        
-        if (nameIsID)
-          this.displayName = result.name
-        
-        if (result !== null){
-          this.accountInfo = result
-          this.fetchAccountHistory()
-        }
-        else {
+        this.accountInfo = nameIsID ?
+          ( await this.$chainWebsocket.send('database', 'get_objects', [[this.name]]) )[0] :
+          ( await this.$chainWebsocket.send('database', 'get_account_by_name', [this.name]) )
+        if (this.accountInfo === null) {
           this.error = `Account ${this.name} not found`
+          return
         }
+        this.fetchAccountHistory()
       } catch(e) {
         this.error = e
       } finally {
@@ -98,10 +91,9 @@ export default {
       }
     },
     async fetchAccountHistory() {
-      // accepts either id or name
       try {
-        this.accountHistory =
-          await this.$parent.send('history', 'get_relative_account_history', [this.name, 0, 100, 0])
+        this.accountHistory =  // accepts either id or name
+          await this.$chainWebsocket.send('history', 'get_relative_account_history', [this.name, 0, 100, 0])
       } catch(e) {
         this.error = e
       } finally {
