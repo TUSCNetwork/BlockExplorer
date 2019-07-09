@@ -20,13 +20,13 @@
         <hr>
         <p>Owner authorities</p>
         <ul>
-          <li v-for="auth in accountInfo.owner.key_auths" v-bind:key="auth[0]">
+          <li v-for="auth in accountInfo.owner.key_auths" :key="auth[0]">
             {{ auth[0] }}
           </li>
         </ul>
         <p>Active authorities</p>
         <ul style="overflow-y: auto;">
-          <li v-for="auth in accountInfo.active.key_auths" v-bind:key="auth[0]">
+          <li v-for="auth in accountInfo.active.key_auths" :key="auth[0]">
             {{ auth[0] }}
           </li>
         </ul>
@@ -38,7 +38,7 @@
       <p>Account history</p>
       <hr>
       <div class="transactions-container">
-        <div v-for="operation in accountHistory" v-bind:key="operation.id" class="transaction">
+        <div v-for="operation in accountHistory" :key="operation.id" class="transaction">
           Transaction <router-link :to="'/tx/'+operation.id">{{ operation.id }}</router-link>
         </div>
       </div>

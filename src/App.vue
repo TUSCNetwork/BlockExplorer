@@ -1,24 +1,21 @@
 <template>
   <div id="app">
-    <!-- <div class="section">
-      <p>Search:</p>
-      <input type="text" id="search" v-model="search">
-    </div> -->
     <div class="section border">
-      <router-link to="/">Home</router-link>
+      <chain-overview/>
     </div>
     <div class="section border">
       <p>Account name: 
         <input type="text" id="searchAddress" v-model="searchAddress">
       </p>
     </div>
+    <router-view :key="$route.fullPath" class="section border"/> 
     <witnesses class="section border"/>
-    <router-view :key="$route.fullPath" class="section border"/>
   </div>
 </template>
 
 <script>
   import Witnesses from './components/Witnesses.vue'
+  import ChainOverview from './components/ChainOverview'
 
   export default {
     name: 'App',
@@ -29,12 +26,21 @@
       }
     },
     components: {
-      Witnesses
+      Witnesses,
+      ChainOverview
     },
     watch: {
       searchAddress: debounce(function(val) {
         this.$router.push({name: 'account', params: {name: val}})
       }, 500)
+    },
+    created() {
+      this.$on('update-chain-overview', properties => {
+        console.log('GOT EEM', properties)
+      })
+    },
+    mounted() {
+      document.getElementById('searchAddress').focus()
     }
 }
 
@@ -49,10 +55,6 @@ function debounce(func, wait) {
     timeout = setTimeout(later, wait)
     func.apply(context, args)
   }
-}
-
-window.onload = () => {
-  document.getElementById('searchAddress').focus()
 }
 </script>
 
@@ -85,10 +87,13 @@ hr {
 .border {
     border: 1px solid black;
     border-radius: 2px;
-  }
+}
+.section {
+  background-color: #2E3131;
+}
 .section {
   padding: 15px;
-  margin: 20px auto;
+  margin: 10px auto;
 }
 .subsection {
   margin: 20px auto;
@@ -104,24 +109,6 @@ hr {
   vertical-align: top;
 }
 
-/* * */
-#log {
-  background-color: rgb(45, 47, 48);
-  font-family: "Courier New", serif;
-
-  max-height: 50%;
-
-  word-break: break-all;
-  overflow-y: auto;
-  padding: 10px;
-}
-.log-item {
-  white-space: pre-wrap;
-}
-.log-indented {
-  padding-left: 40px;
-}
-
 /* * * provisional dark style */
 body {
   background-color: rgb(34, 36, 37);
@@ -129,7 +116,7 @@ body {
 }
 
 * {
-  border-color: rgb(123, 107, 101) !important;
+  border-color: rgb(123, 107, 101);
 }
 
 a {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Current active witnesses</p>
+    <p>Current active witnesses (block producers)</p>
     <hr>
 
     <div v-if="loading">
@@ -12,43 +12,18 @@
     </div>
 
     <div v-if="witnesses" class="witnesses">
-      <div v-for="witness in witnesses" class="witness">
-        Witness {{ witness.id }}
-        <div class="indent">
-          <table>
-            <tr>
-              <td>
-                corresponding account:
-                <router-link :to="'/account/'+witness.witness_account">
-                  {{ witness.witness_account }}
-                </router-link>
-                <br>
-                signing key: <span class="long-key">{{ witness.signing_key }}</span>
-                <br>
-                total_votes: {{ witness.total_votes }}
-                <br>
-                vote_id: {{ witness.vote_id }}
-                <br>
-                url: <a :href="witness.url" target="_blank">{{ witness.url }}</a>
-              </td>
-              <td>
-                last_aslot: {{ witness.last_aslot }}
-                <br>
-                pay_vb: {{ witness.pay_vb }}
-                <br>
-                total_missed: {{ witness.total_missed }}
-                <br>
-                last_confirmed_block_num: {{ witness.last_confirmed_block_num }}
-              </td>
-            </tr>
-          </table>
-        </div>
-      </div>
+      <witness
+        v-for="witness in witnesses"
+        :key="witness.id"
+        :presetWitnessInfo="witness"
+        class="each-witness"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import Witness from './Witness.vue'
 import Loader from './Loader.vue'
 
 export default {
@@ -61,6 +36,7 @@ export default {
     }
   },
   components: {
+    Witness,
     Loader
   },
   created() {
@@ -88,18 +64,12 @@ export default {
 </script>
 
 <style scoped>
-.witness {
-  margin: 0 15px 20px;
-  display: inline-block;
-  border: 1px solid gray;
-  padding: 5px;
-}
 .witnesses {
   height: 300px;
   overflow: auto;
 }
-.long-key {
-  max-width: 300px;
-  display: inline-block;
+.each-witness {
+  margin: 0 5px 20px;
+  max-width: 31%;
 }
 </style>
