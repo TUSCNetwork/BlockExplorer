@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import LandingPage from '@/components/LandingPage'
 import Account from '@/components/Account'
 import Transaction from '@/components/Transaction'
+import Block from '@/components/Block'
 import Witness from '@/components/Witness'
 import PageNotFound from '@/components/PageNotFound'
 
@@ -26,6 +27,12 @@ export default new Router({
       path: '/tx/:id',
       name: 'transaction',
       component: Transaction,
+      props: true
+    },
+    {
+      path: '/block/:id',
+      name: 'block',
+      component: Block,
       props: true
     },
     {

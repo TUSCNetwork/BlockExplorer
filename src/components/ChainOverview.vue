@@ -12,9 +12,13 @@
     </div>
 
     <div v-if="overviewInfo">
-      <div>Head block number: {{ overviewInfo.head_block_number }}</div>
-      <div>Head block ID: {{ overviewInfo.head_block_id }}</div>
-      <div>Time: {{ overviewInfo.time }}</div>
+      <div>
+        Head block:
+        <router-link :to="'/block/'+overviewInfo.head_block_number">
+          {{ overviewInfo.head_block_number }}
+        </router-link>
+      </div>
+      <div>Timestamp: <timestamp :time-string="overviewInfo.time" /></div>
       <div>
         Current witness:
         <router-link :to="'/witness/'+overviewInfo.current_witness">
@@ -27,16 +31,21 @@
       <div>Current aslot: {{ overviewInfo.current_aslot }}</div>
       <div>Recent slots filled: {{ overviewInfo.recent_slots_filled }}</div>
       <div>Dynamic flags: {{ overviewInfo.dynamic_flags }}</div>
-      <div>Last irreversible block number: {{ overviewInfo.last_irreversible_block_num }}</div>
+      <div>Last irreversible block: block
+        <router-link :to="'/block/'+overviewInfo.last_irreversible_block_num">
+          {{ overviewInfo.last_irreversible_block_num }}
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import Loader from './Loader.vue'
+import Loader from './Loader'
+import Timestamp from './Timestamp'
 
 export default {
-  name: 'Transaction',
+  name: 'ChainOverview',
   props: ['id'],
   data() {
     return {
@@ -46,7 +55,8 @@ export default {
     }
   },
   components: {
-    Loader
+    Loader,
+    Timestamp
   },
   created() {
     this.fetch()
