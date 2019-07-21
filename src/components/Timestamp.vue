@@ -55,5 +55,6 @@ export default {
 <style scoped>
 .timestamp {
   border-bottom: 1px dotted #FFF;
+  cursor: pointer;
 }
 </style>

@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import Loader from './Loader.vue'
+import Loader from './Loader'
 
 export default {
   name: 'Witness',

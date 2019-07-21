@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import Witness from './Witness.vue'
-import Loader from './Loader.vue'
+import Witness from './Witness'
+import Loader from './Loader'
 
 export default {
   name: 'Witnesses',

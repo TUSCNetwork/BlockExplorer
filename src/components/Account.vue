@@ -1,6 +1,6 @@
 <template>
   <div class="account">
-    <p>Account {{ accountInfo ? accountInfo.name : this.name }}</p>
+    <div>Account {{ accountInfo ? accountInfo.name : this.name }}</div>
     <hr>
 
     <div v-if="error">
@@ -12,30 +12,30 @@
     </div>
 
     <div v-if="accountInfo">
-      <p>ID: {{ accountInfo.id }}</p>
-      <p>Registrar: {{ accountInfo.registrar }}</p>
-      <p>Statistics: {{ accountInfo.statistics }}</p>
+      <div>ID: {{ accountInfo.id }}</div>
+      <div>Registrar: {{ accountInfo.registrar }}</div>
+      <div>Statistics: {{ accountInfo.statistics }}</div>
       <div class="border subsection">
-        <p>Authorities</p>
+        <div>Authorities</div>
         <hr>
-        <p>Owner authorities</p>
+        <div>Owner authorities</div>
         <ul>
           <li v-for="auth in accountInfo.owner.key_auths" :key="auth[0]">
             {{ auth[0] }}
           </li>
         </ul>
-        <p>Active authorities</p>
+        <div>Active authorities</div>
         <ul style="overflow-y: auto;">
           <li v-for="auth in accountInfo.active.key_auths" :key="auth[0]">
             {{ auth[0] }}
           </li>
         </ul>
-        <p>Memo authority: {{ accountInfo.options.memo_key }}</p>
+        <div>Memo authority: {{ accountInfo.options.memo_key }}</div>
       </div>
     </div>
 
     <div v-if="accountHistory" class="border subsection">
-      <p>Account history</p>
+      <div>Account history</div>
       <hr>
       <div class="transactions-container">
         <div v-for="operation in accountHistory" :key="operation.id" class="transaction">
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import Loader from './Loader.vue'
+import Loader from './Loader'
 
 export default {
   name: 'Account',

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p>Transaction {{ id }}</p>
+    <div>Transaction {{ id }}</div>
     <hr>
 
     <div v-if="loading">
@@ -12,18 +12,22 @@
     </div>
 
     <div v-if="transactionInfo">
-      <p>Block number: {{ transactionInfo.block_num }}</p>
-      <p>Transaction number in block: {{ transactionInfo.trx_in_block }}</p>
-      <p>Operation in transaction: {{ transactionInfo.op_in_trx }}</p>
-      <p>Virtual operation: {{ transactionInfo.virtual_op }}</p>
+      <div>Contained in: block
+        <router-link :to="'/block/'+transactionInfo.block_num">
+          {{ transactionInfo.block_num }}
+        </router-link>
+      </div>
+      <div>Transaction number in block: {{ transactionInfo.trx_in_block }}</div>
+      <div>Operation in transaction: {{ transactionInfo.op_in_trx }}</div>
+      <div>Virtual operation: {{ transactionInfo.virtual_op }}</div>
       <operation :operationCode="transactionInfo.op[0]" :operation="transactionInfo.op[1]" class="border subsection"/>
     </div>
   </div>
 </template>
 
 <script>
-import Loader from './Loader.vue'
-import Operation from './Operation.vue'
+import Loader from './Loader'
+import Operation from './Operation'
 
 export default {
   name: 'Transaction',

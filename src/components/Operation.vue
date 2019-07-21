@@ -1,27 +1,27 @@
 <template>
   <div>
-    <p>Operation info</p>
-    <p>Operation code: {{ operationCode }} ({{ operationCodes[operationCode] }})</p>
+    <div>Operation info</div>
+    <div>Operation code: {{ operationCode }} ({{ operationCodes[operationCode] }})</div>
     <hr>
     
     <!-- OPCODE 0 transfer -->
     <div v-if="operationCode === 0">
-      <p>Amount:<asset-amount :amount="operation.amount" /></p>
-      <p>Fee: <asset-amount :amount="operation.fee" /></p>
+      <div>Amount:<asset-amount :amount="operation.amount" /></div>
+      <div>Fee: <asset-amount :amount="operation.fee" /></div>
       <br>
-      <p>
+      <div>
         To:
         <router-link :to="'/account/'+operation.to">{{ operation.to }}</router-link>
-      </p>
-      <p>
+      </div>
+      <div>
         From:
         <router-link :to="'/account/'+operation.from">{{ operation.from }}</router-link>
-      </p>
+      </div>
       <div v-if="operation.memo">
         <br>
-        <p>Memo:</p>
+        <div>Memo:</div>
         <div class="indent memo">
-          <p v-for="value, key in operation.memo">{{ key }}: {{ value }}</p>
+          <div v-for="value, key in operation.memo">{{ key }}: {{ value }}</div>
         </div>
       </div>
     </div>
@@ -161,7 +161,7 @@
 </template>
 
 <script>
-import AssetAmount from './AssetAmount.vue'
+import AssetAmount from './AssetAmount'
 
 export default {
   name: 'Operation',
