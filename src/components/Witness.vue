@@ -1,5 +1,12 @@
 <template>
-  <div class="witness">
+  <span v-if="showPreview">
+    <router-link :to="'/witness/'+witnessID">{{ witnessID }}</router-link>
+    <span v-if="witnessInfo">
+      (controlled by <account :nameOrID="witnessInfo.witness_account" show-preview />)
+    </span>
+  </span>
+
+  <div v-else class="witness">
     <div v-if="loading">
       <loader/>
     </div>
@@ -12,10 +19,8 @@
       Witness {{ witnessInfo.id }}
       <div class="indent">
         <div>
-          corresponding account:
-          <router-link :to="'/account/'+witnessInfo.witness_account">
-            {{ witnessInfo.witness_account }}
-          </router-link>
+          controlled by account:
+          <account :nameOrID="witnessInfo.witness_account" show-preview />
         </div>
         <div>
           signing key: <span class="long-key indent">{{ witnessInfo.signing_key }}</span>
@@ -48,6 +53,7 @@
 
 <script>
 import Loader from './Loader'
+import Account from './Account'
 
 export default {
   name: 'Witness',
@@ -60,6 +66,10 @@ export default {
       type: Object,
       required: false,
       default: null
+    },
+    showPreview: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -70,24 +80,27 @@ export default {
     }
   },
   components: {
-    Loader
+    Loader,
+    Account
   },
   created() {
     if(this.presetWitnessInfo === null) {
       this.fetch()
-      return
+    } else {
+      this.witnessInfo = this.presetWitnessInfo
     }
-
-    this.witnessInfo = this.presetWitnessInfo
   },
   methods: {
     async fetch() {
       this.error = this.witnessInfo = null
       this.loading = true
       
-      try {        
+      try {
         this.witnessInfo = ( await this.$chainWebsocket.send(
-          'database', 'get_objects', [[this.witnessID]]) )[0]
+          'database', 'get_objects', [[this.witnessID]])
+        )[0]
+        if(! this.witnessInfo)
+          this.error = `Could not find witness ${this.witnessID}`
       } catch(e) {
         this.error = e
       } finally {

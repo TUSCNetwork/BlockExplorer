@@ -33,10 +33,7 @@ export default {
       return timeZoneName || this.time.toString().split(' ')[5]
     },
     localMessage() {
-      let message = `${this.time.toLocaleTimeString()}, ${this.time.toLocaleDateString()}`
-      if(this.localTimezone)
-        message += ` in ${this.localTimezone}`
-      return message
+      return `${this.time.toLocaleTimeString()}, ${this.time.toLocaleDateString()} in ${this.localTimezone}`
     },
     /* */
     UTCMessage() {

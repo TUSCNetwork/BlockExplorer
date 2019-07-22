@@ -9,10 +9,7 @@ export default {
 }
 
 const defaultOptions = {
-  url: 'ws://ec2-18-191-226-51.us-east-2.compute.amazonaws.com:8090',
-  //'wss://bitshares.openledger.info/ws'
-  debug: false,
-  globalDynamicPropertiesCallback: () => {}
+  debug: false
 }
 
 const chainWebsocket = options => ({
@@ -32,8 +29,6 @@ const chainWebsocket = options => ({
         while(this.queryQueue.length > 0) {
           const [api, method, params, res, rej] = this.queryQueue.pop()
           this.send(api, method, params).then(res).catch(rej)
-          if (options.debug)
-            console.log(``)
         }
 
         // intercept 2.1.0 (dynamic global properties) updates
@@ -43,6 +38,10 @@ const chainWebsocket = options => ({
           this.onReceivedCallbacks.forEach(f => {
             f(message)
           })
+
+          if(options.debug)
+            console.log(`received params ${JSON.stringify(message.data, null, 2)}`)
+
           originalOnMessage(message)
         }
       })

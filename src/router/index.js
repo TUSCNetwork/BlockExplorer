@@ -18,7 +18,7 @@ export default new Router({
       component: LandingPage
     },
     {
-      path: '/account/:name',
+      path: '/account/:nameOrID',
       name: 'account',
       component: Account,
       props: true
@@ -36,10 +36,10 @@ export default new Router({
       props: true
     },
     {
-      path: '/witness/:id',
+      path: '/witness/:witnessID',
       name: 'witness',
       component: Witness,
-      props: route => ({witnessID: route.params.id})
+      props: true
     },
     {
       path: '/*',

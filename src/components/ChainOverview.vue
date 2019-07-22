@@ -21,9 +21,7 @@
       <div>Timestamp: <timestamp :time-string="overviewInfo.time" /></div>
       <div>
         Current witness:
-        <router-link :to="'/witness/'+overviewInfo.current_witness">
-          {{ overviewInfo.current_witness }}
-        </router-link>
+        <witness :witnessID="overviewInfo.current_witness" show-preview />
       </div>
       <div>Witness budget: {{ overviewInfo.witness_budget }}</div>
       <div>Accounts registered this interval: {{ overviewInfo.accounts_registered_this_interval }}</div>
@@ -43,6 +41,7 @@
 <script>
 import Loader from './Loader'
 import Timestamp from './Timestamp'
+import Witness from './Witness'
 
 export default {
   name: 'ChainOverview',
@@ -56,23 +55,27 @@ export default {
   },
   components: {
     Loader,
-    Timestamp
+    Timestamp,
+    Witness
   },
   created() {
     this.fetch()
 
-    this.$chainWebsocket.setOnReceivedCallback(message => {
-      const messageData = JSON.parse(message.data)
-      const messageResult = messageData.result
-      if (
-        messageResult instanceof Array &&
-        messageResult.length === 1 &&
-        messageResult[0].id === '2.1.0'
-        )
-      {
-        this.updateChainOverview(messageResult[0])
-      }
-    })
+    if(this.$chainWebsocket.setOnReceivedCallback) {
+      this.$chainWebsocket.setOnReceivedCallback(message => {
+        const messageData = JSON.parse(message.data)
+        const messageResult = messageData.result
+        if (
+          messageResult instanceof Array &&
+          messageResult.length === 1 &&
+          messageResult[0] &&
+          messageResult[0].id === '2.1.0'
+          )
+        {
+          this.updateChainOverview(messageResult[0])
+        }
+      })
+    }
   },
   methods: {
     updateChainOverview(newInfo) {
@@ -83,7 +86,8 @@ export default {
       this.loading = true
 
       try {
-        this.overviewInfo = await this.$chainWebsocket.send('database', 'get_dynamic_global_properties')
+        this.overviewInfo = await this.$chainWebsocket.send(
+          'database', 'get_dynamic_global_properties')
       } catch(e) {
         this.error = e
       } finally {

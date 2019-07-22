@@ -1,6 +1,13 @@
 <template>
-  <div class="account">
-    <div>Account {{ accountInfo ? accountInfo.name : this.name }}</div>
+
+  <span v-if="showPreview">
+    <router-link :to="'/account/'+nameOrID">
+      {{ previewText }}
+    </router-link>
+  </span>
+  
+  <div v-else class="account">
+    <div>Account {{ name }}</div>
     <hr>
 
     <div v-if="error">
@@ -12,26 +19,26 @@
     </div>
 
     <div v-if="accountInfo">
-      <div>ID: {{ accountInfo.id }}</div>
-      <div>Registrar: {{ accountInfo.registrar }}</div>
-      <div>Statistics: {{ accountInfo.statistics }}</div>
-      <div class="border subsection">
-        <div>Authorities</div>
-        <hr>
-        <div>Owner authorities</div>
-        <ul>
-          <li v-for="auth in accountInfo.owner.key_auths" :key="auth[0]">
-            {{ auth[0] }}
-          </li>
-        </ul>
-        <div>Active authorities</div>
-        <ul style="overflow-y: auto;">
-          <li v-for="auth in accountInfo.active.key_auths" :key="auth[0]">
-            {{ auth[0] }}
-          </li>
-        </ul>
-        <div>Memo authority: {{ accountInfo.options.memo_key }}</div>
-      </div>
+        <div>ID: {{ accountInfo.id }}</div>
+        <div>Registrar: {{ accountInfo.registrar }}</div>
+        <div>Statistics: {{ accountInfo.statistics }}</div>
+        <div class="border subsection">
+          <div>Authorities</div>
+          <hr>
+          <div>Owner authorities</div>
+          <ul>
+            <li v-for="auth in accountInfo.owner.key_auths" :key="auth[0]">
+              {{ auth[0] }}
+            </li>
+          </ul>
+          <div>Active authorities</div>
+          <ul style="overflow-y: auto;">
+            <li v-for="auth in accountInfo.active.key_auths" :key="auth[0]">
+              {{ auth[0] }}
+            </li>
+          </ul>
+          <div>Memo authority: {{ accountInfo.options.memo_key }}</div>
+        </div>
     </div>
 
     <div v-if="accountHistory" class="border subsection">
@@ -44,14 +51,21 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
 import Loader from './Loader'
 
 export default {
-  name: 'Account',
-  props: ['name'],
+  name:'Account',
+  props: {
+    nameOrID: String,
+    showPreview: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       loading: false,
@@ -69,18 +83,39 @@ export default {
   watch: {
     '$route': 'fetch'
   },
+  computed: {
+    name() {
+      return this.accountInfo ?
+      this.accountInfo.name :
+      (this.nameIsID ?
+        '(loading)' :
+        this.nameOrID)
+    },
+    id() {
+      return this.accountInfo ?
+      this.accountInfo.id :
+      (this.nameIsID ?
+        this.nameOrID :
+        '(loading)')
+    },
+    nameIsID() {
+      return /1.2.\d+/.exec(this.nameOrID) !== null
+    },
+    previewText() {
+      return this.accountInfo ? `${this.name} (${this.id})` : this.nameOrID
+    }
+  },
   methods: {
     async fetch() {
       this.error = this.accountInfo = null
       this.loading = true
 
-      let nameIsID = (/1.2.\d+/.exec(this.name) !== null)
       try {
-        this.accountInfo = nameIsID ?
-          ( await this.$chainWebsocket.send('database', 'get_objects', [[this.name]]) )[0] :
-          ( await this.$chainWebsocket.send('database', 'get_account_by_name', [this.name]) )
+        this.accountInfo = this.nameIsID ?
+          ( await this.$chainWebsocket.send('database', 'get_objects', [[this.nameOrID]]) )[0] :
+          ( await this.$chainWebsocket.send('database', 'get_account_by_name', [this.nameOrID]) )
         if (this.accountInfo === null) {
-          this.error = `Account ${this.name} not found`
+          this.error = `Account ${this.nameOrID} not found`
           return
         }
         this.fetchAccountHistory()
@@ -93,7 +128,8 @@ export default {
     async fetchAccountHistory() {
       try {
         this.accountHistory =  // accepts either id or name
-          await this.$chainWebsocket.send('history', 'get_relative_account_history', [this.name, 0, 100, 0])
+          await this.$chainWebsocket.send(
+            'history', 'get_relative_account_history', [this.nameOrID, 0, 100, 0])
       } catch(e) {
         this.error = e
       } finally {

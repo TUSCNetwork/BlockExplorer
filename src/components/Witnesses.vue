@@ -1,7 +1,6 @@
 <template>
   <div>
-    <p>Current active witnesses (block producers)</p>
-    <hr>
+    <p>Witnesses</p>
 
     <div v-if="loading">
       <loader/>
@@ -11,13 +10,25 @@
       {{ error }}
     </div>
 
-    <div v-if="witnesses" class="witnesses">
-      <witness
-        v-for="witness in witnesses"
-        :key="witness.id"
-        :presetWitnessInfo="witness"
-        class="each-witness"
-      />
+    <div v-if="activeWitnesses" class="active-witnesses">
+      <tabs :options="{ useUrlFragment: false }">
+          <tab :name="`Active (${activeWitnesses.length})`">
+            <witness
+              v-for="witness in activeWitnesses"
+              :key="witness.id"
+              :presetWitnessInfo="witness"
+              class="each-witness"
+            />
+          </tab>
+          <tab :name="`Standby (${this.standbyWitnesses.length})`">
+            <witness
+              v-for="witness in standbyWitnesses"
+              :key="witness.id"
+              :presetWitnessInfo="witness"
+              class="each-witness"
+              />
+          </tab>
+      </tabs>
     </div>
   </div>
 </template>
@@ -25,14 +36,16 @@
 <script>
 import Witness from './Witness'
 import Loader from './Loader'
+import _ from 'lodash'
 
 export default {
-  name: 'Witnesses',
+  name: 'activeWitnesses',
   data() {
     return {
       loading: false,
       error: null,
-      witnesses: null
+      activeWitnesses: [],
+      standbyWitnesses: []
     }
   },
   components: {
@@ -44,17 +57,39 @@ export default {
   },
   methods: {
     async fetch() {
-      this.error = this.witnesses = null
+      this.error = this.activeWitnesses = null
       this.loading = true
       
-      try {        
-        let witnessIDs = (
-          await this.$chainWebsocket.send('database', 'get_global_properties', [])
-        ).active_witnesses
-        
-        this.witnesses = await this.$chainWebsocket.send('database', 'get_objects', [witnessIDs])
+      try {
+        let witnessCount = await this.$chainWebsocket.send(
+          'database', 'get_witness_count', [])
+        let allWitnessIDs = _.range(1, witnessCount + 1).map(n => `1.6.${n}`)
+
+        let activeWitnessIDs = ( await this.$chainWebsocket.send(
+            'database', 'get_global_properties', []) ).active_witnesses
+        this.activeWitnesses = await this.$chainWebsocket.send(
+          'database', 'get_objects', [activeWitnessIDs])
+
+        const setMinus = (A, B) => {
+          let map = {}, C = [];
+          for(let i = B.length; i--; )
+            map[B[i]] = null; // any other value would do
+          for(let i = A.length; i--; ) {
+            if(!map.hasOwnProperty(A[i]))
+              C.push(A[i]);
+          }
+
+          return C;
+        }
+
+        let standbyWitnessIDs = setMinus(allWitnessIDs, activeWitnessIDs)
+        this.standbyWitnesses = await this.$chainWebsocket.send(
+          'database', 'get_objects', [standbyWitnessIDs])
       } catch(e) {
         this.error = e
+        console.log('error')
+        console.log(e)
+        console.log('error')
       } finally {
         this.loading = false
       }
@@ -64,12 +99,11 @@ export default {
 </script>
 
 <style scoped>
-.witnesses {
-  height: 300px;
-  overflow: auto;
+.active-witnesses {
+
 }
 .each-witness {
   margin: 0 5px 20px;
-  max-width: 31%;
+  max-width: 400px;
 }
 </style>

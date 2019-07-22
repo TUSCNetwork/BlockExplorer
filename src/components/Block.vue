@@ -18,9 +18,7 @@
       <div>Timestamp: <timestamp :time-string="blockInfo.timestamp" /></div>
       <div>
         Witness:
-        <router-link :to="'/witness/'+blockInfo.witness">
-          {{ blockInfo.witness }}
-        </router-link>
+        <witness :witnessID="blockInfo.witness" show-preview />
       </div>
       <div>
         Witness signature:
@@ -44,6 +42,7 @@
 <script>
 import Loader from './Loader'
 import Timestamp from './Timestamp'
+import Witness from './Witness'
 
 export default {
   name: 'Block',
@@ -57,7 +56,8 @@ export default {
   },
   components: {
     Loader,
-    Timestamp
+    Timestamp,
+    Witness
   },
   created() {
     this.fetch()
