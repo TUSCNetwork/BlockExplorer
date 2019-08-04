@@ -1,9 +1,7 @@
 <template>
 
   <span v-if="showPreview">
-    <router-link :to="'/account/'+nameOrID">
-      {{ previewText }}
-    </router-link>
+    <router-link :to="'/account/'+nameOrID">{{ previewText }}</router-link>
   </span>
   
   <div v-else class="account">
