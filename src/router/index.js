@@ -7,6 +7,8 @@ import Block from '@/components/Block'
 import Witness from '@/components/Witness'
 import PageNotFound from '@/components/PageNotFound'
 
+import Witnesses from '@/components/Witnesses'
+
 Vue.use(Router)
 
 export default new Router({
@@ -15,7 +17,7 @@ export default new Router({
     {
       path: '/',
       name: 'landing',
-      component: LandingPage
+      component: Witnesses //LandingPage
     },
     {
       path: '/account/:nameOrID',

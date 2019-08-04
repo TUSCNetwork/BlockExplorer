@@ -1,34 +1,56 @@
 <template>
   <div>
-    <p>Witnesses</p>
-
-    <div v-if="loading">
-      <loader/>
-    </div>
-
     <div v-if="error">
       {{ error }}
     </div>
 
-    <div v-if="activeWitnesses" class="active-witnesses">
-      <tabs :options="{ useUrlFragment: false }">
-          <tab :name="`Active (${activeWitnesses.length})`">
-            <witness
-              v-for="witness in activeWitnesses"
-              :key="witness.id"
-              :presetWitnessInfo="witness"
-              class="each-witness"
-            />
-          </tab>
-          <tab :name="`Standby (${this.standbyWitnesses.length})`">
-            <witness
-              v-for="witness in standbyWitnesses"
-              :key="witness.id"
-              :presetWitnessInfo="witness"
-              class="each-witness"
-              />
-          </tab>
-      </tabs>
+    <!-- show one table each for active and standby witnesses -->
+    <div
+      v-for="[witnessType, witnesses] in [['Active',activeWitnesses], ['Standby', standbyWitnesses]]"
+      :key="witnessType"
+    >
+      <h3>{{ witnessType }} witnesses ({{ witnesses.length }})</h3>
+
+      <div v-if="loading">
+        <loader/>
+      </div>
+
+      <table>
+        <tr>
+          <td>ID</td>
+          <td>Operated by</td>
+          <td>Total votes</td>
+          <td>Vote ID</td>
+          <td>Last aslot</td>
+          <td>Pay vb</td>
+          <td>URL</td>
+          <td>Total blocks missed</td>
+          <td>Last confirmed block</td>
+        </tr>
+        <tr v-for="witness in witnesses" :key="witness.id">
+          <td>
+            <router-link :to="`/witness/${witness.id}`">{{ witness.id }}</router-link>
+          </td>
+          <td>
+            <router-link :to="`/account/${witness.witness_account}`">
+            {{ witness.witness_account }}
+            </router-link>
+          </td>
+          <td>{{ witness.total_votes }}</td>
+          <td>{{ witness.vote_id }}</td>
+          <td>{{ witness.last_aslot }}</td>
+          <td>{{ witness.pay_vb }}</td>
+          <td>
+            <a target="_blank" :href="witness.url">{{ witness.url }}</a>
+          </td>
+          <td>{{ witness.total_missed }}</td>
+          <td>
+            <router-link :to="`/block/${witness.last_confirmed_block_num}`">
+              {{ witness.last_confirmed_block_num }}
+            </router-link>
+          </td>
+        </tr>
+      </table>
     </div>
   </div>
 </template>
@@ -39,13 +61,14 @@ import Loader from './Loader'
 import _ from 'lodash'
 
 export default {
-  name: 'activeWitnesses',
+  name: 'Witnesses',
   data() {
     return {
       loading: false,
       error: null,
-      activeWitnesses: [],
-      standbyWitnesses: []
+      allWitnesses: [],
+      _witnessCount: null,
+      _activeCount: null
     }
   },
   components: {
@@ -54,42 +77,46 @@ export default {
   },
   created() {
     this.fetch()
+    setInterval(this.fetch, 1000 * 60 * 3)
+  },
+  computed: {
+    activeWitnesses() {
+      return this.allWitnesses.slice(0, this._activeCount)
+    },
+    standbyWitnesses() {
+      return this.allWitnesses.slice(this._activeCount)
+    }
   },
   methods: {
     async fetch() {
-      this.error = this.activeWitnesses = null
+      this.error = null
       this.loading = true
       
       try {
-        let witnessCount = await this.$chainWebsocket.send(
+        this._witnessCount = await this.$chainWebsocket.send(
           'database', 'get_witness_count', [])
-        let allWitnessIDs = _.range(1, witnessCount + 1).map(n => `1.6.${n}`)
 
-        let activeWitnessIDs = ( await this.$chainWebsocket.send(
-            'database', 'get_global_properties', []) ).active_witnesses
-        this.activeWitnesses = await this.$chainWebsocket.send(
-          'database', 'get_objects', [activeWitnessIDs])
+        this._activeCount = ( await this.$chainWebsocket.send(
+            'database', 'get_global_properties', []) ).active_witnesses.length
 
-        const setMinus = (A, B) => {
-          let map = {}, C = [];
-          for(let i = B.length; i--; )
-            map[B[i]] = null; // any other value would do
-          for(let i = A.length; i--; ) {
-            if(!map.hasOwnProperty(A[i]))
-              C.push(A[i]);
-          }
+        let witnessIDs = _.range(1, this._witnessCount + 1).map(n => `1.6.${n}`)
+        let allWitnesses = await this.$chainWebsocket.send(
+          'database', 'get_objects', [witnessIDs])
+        // descending sort by votes
+        allWitnesses.sort((w1, w2) => {
+          let voteDiff = w2.total_votes - w1.total_votes
+          if(voteDiff !== 0)
+            return voteDiff
 
-          return C;
-        }
-
-        let standbyWitnessIDs = setMinus(allWitnessIDs, activeWitnessIDs)
-        this.standbyWitnesses = await this.$chainWebsocket.send(
-          'database', 'get_objects', [standbyWitnessIDs])
+          let w1Pieces = w1.id.split('.')
+          let w2Pieces = w2.id.split('.')
+          let w1IDFinal = Number(w1Pieces[w1Pieces.length - 1])
+          let w2IDFinal = Number(w2Pieces[w2Pieces.length - 1])
+          return w1IDFinal - w2IDFinal
+        })
+        window.xy = this.allWitnesses = allWitnesses
       } catch(e) {
         this.error = e
-        console.log('error')
-        console.log(e)
-        console.log('error')
       } finally {
         this.loading = false
       }
@@ -99,11 +126,9 @@ export default {
 </script>
 
 <style scoped>
-.active-witnesses {
-
-}
-.each-witness {
-  margin: 0 5px 20px;
-  max-width: 400px;
+td {
+  padding-left: 5px;
+  padding-right: 5px;
+  border-right: 1px solid #222;
 }
 </style>

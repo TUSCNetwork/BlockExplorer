@@ -7,7 +7,7 @@
       <p>Account name: <input type="text" id="searchAddress" v-model="searchAddress"></p>
     </div>
     <router-view :key="$route.fullPath" class="section border"/> 
-    <witnesses class="section border"/>
+    <!-- <witnesses class="section border"/> -->
   </div>
 </template>
 
@@ -82,7 +82,7 @@ hr {
     border-radius: 2px;
 }
 .section {
-  background-color: #2E3131;
+  background-color: #3B3F3F;
 }
 .section {
   padding: 15px;
