@@ -17,6 +17,7 @@
 
       <table>
         <tr>
+          <td>Rank by votes</td>
           <td>ID</td>
           <td>Operated by</td>
           <td>Total votes</td>
@@ -28,6 +29,7 @@
           <td>Last confirmed block</td>
         </tr>
         <tr v-for="witness in witnesses" :key="witness.id">
+          <td>{{ witness.rank }}</td>
           <td>
             <router-link :to="`/witness/${witness.id}`">{{ witness.id }}</router-link>
           </td>
@@ -102,8 +104,7 @@ export default {
         let witnessIDs = _.range(1, this._witnessCount + 1).map(n => `1.6.${n}`)
         let allWitnesses = await this.$chainWebsocket.send(
           'database', 'get_objects', [witnessIDs])
-        // descending sort by votes
-        allWitnesses.sort((w1, w2) => {
+        allWitnesses.sort((w1, w2) => {  // descending sort by votes
           let voteDiff = w2.total_votes - w1.total_votes
           if(voteDiff !== 0)
             return voteDiff
@@ -114,7 +115,8 @@ export default {
           let w2IDFinal = Number(w2Pieces[w2Pieces.length - 1])
           return w1IDFinal - w2IDFinal
         })
-        window.xy = this.allWitnesses = allWitnesses
+        allWitnesses = allWitnesses.map((witness, index) => ({rank: index + 1, ...witness}))
+        this.allWitnesses = allWitnesses
       } catch(e) {
         this.error = e
       } finally {
