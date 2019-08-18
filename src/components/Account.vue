@@ -47,13 +47,20 @@
           Transaction <router-link :to="'/tx/'+operation.id">{{ operation.id }}</router-link>
         </div>
       </div>
+      <div>
+        <v-pagination v-model="currentPage"
+                      :page-count="totalPages"
+                      :classes="bootstrapPaginationClasses"
+                      :labels="paginationAnchorTexts"
+                      @input="selectPage"></v-pagination>
+      </div>
     </div>
   </div>
-
 </template>
 
 <script>
 import Loader from './Loader'
+import vPagination from 'vue-plain-pagination'
 
 export default {
   name:'Account',
@@ -69,11 +76,28 @@ export default {
       loading: false,
       error: null,
       accountInfo: null,
-      accountHistory: null,
+      accountStatistics: null,
+      accountHistory: [],
+      currentPage: 250,
+      pageLimit : 100,
+      bootstrapPaginationClasses: {
+        ul: 'pagination',
+        li: 'pagination-item',
+        liActive: 'active',
+        liDisable: 'disabled',
+        button: 'page-link' 
+      },
+      paginationAnchorTexts: {
+        first: 'First',
+        prev: 'Previous',
+        next: 'Next',
+        last: 'Last'
+      }
     }
   },
   components: {
-    Loader
+    Loader,
+    vPagination 
   },
   created() {
     this.fetch()
@@ -88,6 +112,9 @@ export default {
       (this.nameIsID ?
         '(loading)' :
         this.nameOrID)
+    },
+    totalPages() {
+      return Math.ceil(this.accountStatistics['total_ops']/this.pageLimit)
     },
     id() {
       return this.accountInfo ?
@@ -116,6 +143,11 @@ export default {
           this.error = `Account ${this.nameOrID} not found`
           return
         }
+        try{
+          this.accountStatistics = ( await this.$chainWebsocket.send('database', 'get_objects', [[this.accountInfo['statistics']]]) )[0]
+        } catch(e) {
+          this.error = e
+        }
         this.fetchAccountHistory()
       } catch(e) {
         this.error = e
@@ -124,15 +156,20 @@ export default {
       }
     },
     async fetchAccountHistory() {
+      var page = this.currentPage-1;
+      var tempAccountHistory=null;
       try {
-        this.accountHistory =  // accepts either id or name
-          await this.$chainWebsocket.send(
-            'history', 'get_relative_account_history', [this.nameOrID, 0, 100, 0])
-      } catch(e) {
+            this.accountHistory =  // accepts either id or name
+            await this.$chainWebsocket.send(
+              'history', 'get_relative_account_history', [this.nameOrID, 0 , this.pageLimit , this.accountStatistics['total_ops']-page*this.pageLimit])
+        } catch(e) {
         this.error = e
       } finally {
         this.loading = false
       }
+    },
+    selectPage : function () {
+      this.fetchAccountHistory();
     }
   }
 }

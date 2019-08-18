@@ -199,6 +199,9 @@ a:visited {
     padding: 2em 1em;
   }
 }
+.pagination-item {
+    display: inline-block;
+}
 
 /* */
 .tabs-component-tabs {
