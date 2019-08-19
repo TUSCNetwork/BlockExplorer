@@ -160,7 +160,7 @@ export default {
       try {
         this.accountHistory =  // accepts either id or name
         await this.$chainWebsocket.send(
-            'history', 'get_relative_account_history', [this.nameOrID, 0 , this.pageLimit , this.accountStatistics['total_ops']-(this.currentPage-1)*this.pageLimit])
+          'history', 'get_relative_account_history', [this.nameOrID, 0 , this.pageLimit , this.accountStatistics['total_ops']-(this.currentPage-1)*this.pageLimit])
       } catch(e) {
         this.error = e
       } finally {
