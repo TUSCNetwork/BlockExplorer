@@ -9,7 +9,7 @@ import Tabs from 'vue-tabs-component'
 Vue.config.productionTip = false
 
 Vue.use(chainWebsocket, {
-  url: 'wss://test2.api.tusc.network:8091',
+  url: 'wss://test.api.tusc.network:8091',
   debug: false
 })
 
