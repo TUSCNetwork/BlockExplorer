@@ -56,6 +56,7 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -76,9 +77,9 @@ export default {
       loading: false,
       error: null,
       accountInfo: null,
-      accountStatistics: null,
       accountHistory: [],
-      currentPage: 250,
+      accountStatistics: null,
+      currentPage: 1,
       pageLimit : 100,
       bootstrapPaginationClasses: {
         ul: 'pagination',
@@ -156,13 +157,11 @@ export default {
       }
     },
     async fetchAccountHistory() {
-      var page = this.currentPage-1;
-      var tempAccountHistory=null;
       try {
-            this.accountHistory =  // accepts either id or name
-            await this.$chainWebsocket.send(
-              'history', 'get_relative_account_history', [this.nameOrID, 0 , this.pageLimit , this.accountStatistics['total_ops']-page*this.pageLimit])
-        } catch(e) {
+        this.accountHistory =  // accepts either id or name
+        await this.$chainWebsocket.send(
+            'history', 'get_relative_account_history', [this.nameOrID, 0 , this.pageLimit , this.accountStatistics['total_ops']-(this.currentPage-1)*this.pageLimit])
+      } catch(e) {
         this.error = e
       } finally {
         this.loading = false
