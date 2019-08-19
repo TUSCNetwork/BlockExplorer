@@ -77,7 +77,7 @@ export default {
       loading: false,
       error: null,
       accountInfo: null,
-      accountHistory: [],
+      accountHistory: null,
       accountStatistics: null,
       currentPage: 1,
       pageLimit : 100,
@@ -159,8 +159,8 @@ export default {
     async fetchAccountHistory() {
       try {
         this.accountHistory =  // accepts either id or name
-        await this.$chainWebsocket.send(
-          'history', 'get_relative_account_history', [this.nameOrID, 0 , this.pageLimit , this.accountStatistics['total_ops']-(this.currentPage-1)*this.pageLimit])
+          await this.$chainWebsocket.send(
+            'history', 'get_relative_account_history', [this.nameOrID, 0 , this.pageLimit , this.accountStatistics['total_ops']-(this.currentPage-1)*this.pageLimit])
       } catch(e) {
         this.error = e
       } finally {
