@@ -115,7 +115,7 @@ export default {
         this.nameOrID)
     },
     totalPages() {
-      return Math.ceil(this.accountStatistics['total_ops']/this.pageLimit)
+      return typeof this.accountStatistics.total_ops !== 'undefined' ? ( Math.ceil((this.accountStatistics['total_ops']-this.accountStatistics['removed_ops'])/this.pageLimit) ) : 0
     },
     id() {
       return this.accountInfo ?
