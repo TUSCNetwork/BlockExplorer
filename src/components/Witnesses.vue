@@ -60,7 +60,7 @@
 <script>
 import Witness from './Witness'
 import Loader from './Loader'
-import _ from 'lodash'
+import range from 'lodash/range'
 
 export default {
   name: 'Witnesses',
@@ -101,7 +101,7 @@ export default {
         this._activeCount = ( await this.$chainWebsocket.send(
             'database', 'get_global_properties', []) ).active_witnesses.length
 
-        let witnessIDs = _.range(1, this._witnessCount + 1).map(n => `1.6.${n}`)
+        let witnessIDs = range(1, this._witnessCount + 1).map(n => `1.6.${n}`)
         let allWitnesses = await this.$chainWebsocket.send(
           'database', 'get_objects', [witnessIDs])
         allWitnesses.sort((w1, w2) => {  // descending sort by votes

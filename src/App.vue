@@ -14,6 +14,7 @@
 <script>
   import Witnesses from './components/Witnesses.vue'
   import ChainOverview from './components/ChainOverview'
+  import debounce from 'lodash/debounce'
 
   export default {
     name: 'App',
@@ -28,26 +29,16 @@
       ChainOverview
     },
     watch: {
-      searchAddress: debounce(function(val) {
-        this.$router.push({name: 'account', params: {name: val}})
-      }, 500)
+      searchAddress: debounce(function (val) {
+        this.$router.push({name: 'account', params: {nameOrID: val}})
+      }, 150)
+      // searchAddress: debounce(function(val) {
+      //   this.$router.push({name: 'account', params: {name: val}})
+      // }, 500)
     },
     mounted() {
       document.getElementById('searchAddress').focus()
     }
-}
-
-// TODO lodash?
-function debounce(func, wait) {
-  let timeout
-  return function() {
-    const context = this, args = arguments
-    const later = () => timeout = null
-    clearTimeout(timeout)
-    console.log('debounced')
-    timeout = setTimeout(later, wait)
-    func.apply(context, args)
-  }
 }
 </script>
 
