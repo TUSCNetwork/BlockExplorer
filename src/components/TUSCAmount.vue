@@ -11,7 +11,7 @@ export default {
   props: ['amount'],
   data() {
   	return {
-  	  ADJUSTMENT_FACTOR: Math.pow(10, 8)
+  	  ADJUSTMENT_FACTOR: Math.pow(10, 5)
   	}
   },
   computed: {
