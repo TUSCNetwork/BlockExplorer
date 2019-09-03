@@ -6,8 +6,8 @@
     
     <!-- OPCODE 0 transfer -->
     <div v-if="operationCode === 0">
-      <div>Amount:<asset-amount :amount="operation.amount" /></div>
-      <div>Fee: <asset-amount :amount="operation.fee" /></div>
+      <div>Amount: {{ JSON.stringify(operation.amount) }}</div>
+      <div>Fee: {{ JSON.stringify(operation.fee) }}</div>
       <br>
       <div>
         To:
@@ -161,13 +161,10 @@
 </template>
 
 <script>
-import AssetAmount from './AssetAmount'
-
 export default {
   name: 'Operation',
   props: ['operationCode', 'operation'],
   components: {
-    AssetAmount
   },
   data() {
     return {

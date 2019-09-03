@@ -15,10 +15,9 @@
         <loader/>
       </div>
 
-      <table>
+      <table v-if="witnesses.length > 0">
         <tr>
-          <td>Rank by votes</td>
-          <td>ID</td>
+          <td>Rank</td>
           <td>Operated by</td>
           <td>Total votes</td>
           <td>Vote ID</td>
@@ -29,14 +28,14 @@
           <td>Last confirmed block</td>
         </tr>
         <tr v-for="witness in witnesses" :key="witness.id">
-          <td>{{ witness.rank }}</td>
           <td>
-            <router-link :to="`/witness/${witness.id}`">{{ witness.id }}</router-link>
+            {{ witness.rank }}
           </td>
           <td>
-            <router-link :to="`/account/${witness.witness_account}`">
+            <!-- <router-link :to="`/account/${witness.witness_account}`">
             {{ witness.witness_account }}
-            </router-link>
+            </router-link> -->
+            <account :nameOrID="witness.witness_account" show-preview />
           </td>
           <td>{{ witness.total_votes }}</td>
           <td>{{ witness.vote_id }}</td>
@@ -51,6 +50,9 @@
               {{ witness.last_confirmed_block_num }}
             </router-link>
           </td>
+          <td>
+            <router-link :to="`/witness/${witness.id}`">more info</router-link>
+          </td>
         </tr>
       </table>
     </div>
@@ -59,6 +61,7 @@
 
 <script>
 import Witness from './Witness'
+import Account from './Account'
 import Loader from './Loader'
 import range from 'lodash/range'
 
@@ -75,6 +78,7 @@ export default {
   },
   components: {
     Witness,
+    Account,
     Loader
   },
   created() {
@@ -101,7 +105,7 @@ export default {
         this._activeCount = ( await this.$chainWebsocket.send(
             'database', 'get_global_properties', []) ).active_witnesses.length
 
-        let witnessIDs = range(1, this._witnessCount + 1).map(n => `1.6.${n}`)
+        let witnessIDs = range(1, this._witnessCount + 1).map(n => `1.5.${n}`)
         let allWitnesses = await this.$chainWebsocket.send(
           'database', 'get_objects', [witnessIDs])
         allWitnesses.sort((w1, w2) => {  // descending sort by votes
