@@ -6,8 +6,14 @@
     
     <!-- OPCODE 0 transfer -->
     <div v-if="operationCode === 0">
-      <div>Amount: {{ JSON.stringify(operation.amount) }}</div>
-      <div>Fee: {{ JSON.stringify(operation.fee) }}</div>
+      <div>
+        Amount:
+        <TUSC-amount :amount="operation.amount.amount" />
+      </div>
+      <div>
+        Fee:
+        <TUSC-amount :amount="operation.fee.amount" />
+      </div>
       <br>
       <div>
         To:
@@ -161,10 +167,13 @@
 </template>
 
 <script>
+import TUSCAmount from './TUSCAmount'
+
 export default {
   name: 'Operation',
   props: ['operationCode', 'operation'],
   components: {
+    TUSCAmount
   },
   data() {
     return {

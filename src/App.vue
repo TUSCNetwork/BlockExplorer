@@ -12,7 +12,7 @@
 </template>
 
 <script>
-  import Witnesses from './components/Witnesses.vue'
+  import Witnesses from './components/Witnesses'
   import ChainOverview from './components/ChainOverview'
   import debounce from 'lodash/debounce'
 
